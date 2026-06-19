@@ -1,0 +1,335 @@
+/*
+ * ============================================================
+ * Custom Homepage — shared styles
+ * Linked by every custom-homepage-*.liquid section.
+ *
+ * Dynamic, per-section values (columns, colors, padding, gap)
+ * are passed in through inline CSS custom properties on each
+ * section root, so this file can stay 100% static and cacheable.
+ * Breakpoint 749px matches the theme's mobile breakpoint.
+ * ============================================================ */
+
+/* ---------- Layout primitives ---------- */
+.ch-container {
+  width: 100%;
+  max-width: var(--ch-page-width, 1200px);
+  margin-inline: auto;
+  padding-inline: clamp(16px, 5vw, 48px);
+}
+
+.ch-section {
+  font-family: inherit;
+}
+
+/* Show/hide toggle: on the live storefront a hidden section is not
+   rendered at all (the Liquid `if` skips it). This class is therefore
+   only ever emitted inside the Theme Editor, where we dim the section
+   so the merchant can still see and re-enable it. */
+.ch-is-hidden {
+  opacity: 0.4;
+  outline: 2px dashed rgba(128, 128, 128, 0.6);
+  outline-offset: -2px;
+}
+
+.ch-section__header {
+  margin-block-end: clamp(24px, 4vw, 48px);
+  text-align: var(--ch-header-align, center);
+}
+.ch-section__title {
+  margin: 0;
+  font-size: clamp(1.6rem, 3vw, 2.4rem);
+  line-height: 1.15;
+}
+.ch-section__subtitle {
+  margin: 8px auto 0;
+  max-width: 60ch;
+  opacity: 0.8;
+}
+.ch-section__subtitle > :first-child { margin-top: 0; }
+.ch-section__subtitle > :last-child { margin-bottom: 0; }
+
+/* ---------- Buttons ---------- */
+.ch-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 14px 28px;
+  border-radius: var(--ch-btn-radius, 6px);
+  font-weight: 600;
+  line-height: 1;
+  text-decoration: none;
+  cursor: pointer;
+  border: 2px solid currentColor;
+  transition: opacity 0.15s ease, transform 0.05s ease, background-color 0.15s ease, color 0.15s ease;
+}
+.ch-btn:active { transform: translateY(1px); }
+.ch-btn--primary {
+  background: var(--ch-accent, #1a1a1a);
+  color: var(--ch-accent-text, #ffffff);
+  border-color: var(--ch-accent, #1a1a1a);
+}
+.ch-btn--primary:hover { opacity: 0.88; }
+.ch-btn--secondary {
+  background: transparent;
+  color: inherit;
+}
+.ch-btn--secondary:hover { background: rgba(128, 128, 128, 0.12); }
+.ch-btn-group {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-top: 20px;
+}
+
+/* ---------- Generic responsive card grid ---------- */
+.ch-grid {
+  display: grid;
+  grid-template-columns: repeat(var(--ch-cols, 3), minmax(0, 1fr));
+  gap: var(--ch-gap, 24px);
+}
+
+img.ch-img,
+.ch-img img {
+  display: block;
+  width: 100%;
+  height: auto;
+  max-width: 100%;
+}
+
+/* ============================================================
+ * HERO
+ * ============================================================ */
+.ch-hero { position: relative; overflow: hidden; }
+.ch-hero__bg {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+}
+.ch-hero__bg img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.ch-hero__inner {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  gap: clamp(24px, 5vw, 64px);
+}
+.ch-hero--img-left .ch-hero__inner { flex-direction: row-reverse; }
+.ch-hero__content { flex: 1 1 0; min-width: 0; }
+.ch-hero__media { flex: 1 1 0; min-width: 0; }
+.ch-hero__media img { border-radius: var(--ch-img-radius, 8px); }
+.ch-hero__heading {
+  margin: 0;
+  font-size: clamp(2rem, 5vw, 3.5rem);
+  line-height: 1.05;
+}
+.ch-hero__subheading {
+  margin-top: 16px;
+  font-size: clamp(1rem, 1.6vw, 1.2rem);
+  opacity: 0.9;
+}
+.ch-hero__subheading > :first-child { margin-top: 0; }
+
+/* ============================================================
+ * BENEFITS
+ * ============================================================ */
+.ch-benefits__item {
+  display: flex;
+  flex-direction: column;
+  align-items: var(--ch-item-align, center);
+  text-align: var(--ch-item-align-text, center);
+  gap: 10px;
+}
+.ch-benefits__icon {
+  width: var(--ch-icon-size, 56px);
+  height: var(--ch-icon-size, 56px);
+  object-fit: contain;
+}
+.ch-benefits__icon-fallback {
+  width: var(--ch-icon-size, 56px);
+  height: var(--ch-icon-size, 56px);
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  background: rgba(128, 128, 128, 0.15);
+  font-size: 1.5rem;
+}
+.ch-benefits__title { margin: 4px 0 0; font-size: 1.15rem; }
+.ch-benefits__text { margin: 0; opacity: 0.8; }
+.ch-benefits__link {
+  margin-top: 4px;
+  font-weight: 600;
+  text-decoration: underline;
+  color: inherit;
+}
+
+/* ============================================================
+ * PRODUCT & COLLECTION CARDS
+ * ============================================================ */
+.ch-card { display: flex; flex-direction: column; height: 100%; }
+.ch-card__media {
+  position: relative;
+  display: block;
+  overflow: hidden;
+  border-radius: var(--ch-img-radius, 8px);
+  background: rgba(128, 128, 128, 0.08);
+  aspect-ratio: var(--ch-card-ratio, 1 / 1);
+}
+.ch-card__media img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.4s ease;
+}
+.ch-card:hover .ch-card__media img { transform: scale(1.04); }
+.ch-card__badge {
+  position: absolute;
+  top: 10px;
+  inset-inline-start: 10px;
+  background: #d11a2a;
+  color: #fff;
+  font-size: 0.75rem;
+  font-weight: 700;
+  padding: 4px 8px;
+  border-radius: 4px;
+}
+.ch-card__title {
+  margin: 12px 0 4px;
+  font-size: 1.05rem;
+  color: inherit;
+  text-decoration: none;
+}
+.ch-card__desc { margin: 0 0 12px; opacity: 0.8; font-size: 0.95rem; }
+.ch-card__price { font-weight: 700; margin: 0 0 12px; }
+.ch-card__price del { opacity: 0.55; font-weight: 400; margin-inline-end: 6px; }
+.ch-card__price .ch-card__sale { color: #d11a2a; }
+.ch-card__footer { margin-top: auto; }
+.ch-card .ch-btn { width: 100%; }
+
+.ch-products__viewall { text-align: center; margin-top: clamp(24px, 4vw, 40px); }
+
+/* Collections carousel layout (no JS — CSS scroll-snap) */
+.ch-collections--carousel .ch-grid {
+  display: flex;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  -webkit-overflow-scrolling: touch;
+  padding-bottom: 8px;
+}
+.ch-collections--carousel .ch-grid > * {
+  flex: 0 0 calc((100% - (var(--ch-cols, 3) - 1) * var(--ch-gap, 24px)) / var(--ch-cols, 3));
+  scroll-snap-align: start;
+}
+
+/* ============================================================
+ * REVIEWS
+ * ============================================================ */
+.ch-review {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: clamp(20px, 3vw, 32px);
+  border: 1px solid rgba(128, 128, 128, 0.22);
+  border-radius: var(--ch-img-radius, 8px);
+  height: 100%;
+}
+.ch-review__stars { color: #f5a623; letter-spacing: 2px; font-size: 1.1rem; }
+.ch-review__stars .ch-star--empty { opacity: 0.3; }
+.ch-review__text { margin: 0; font-size: 1.05rem; line-height: 1.5; }
+.ch-review__text > :first-child { margin-top: 0; }
+.ch-review__text > :last-child { margin-bottom: 0; }
+.ch-review__footer { display: flex; align-items: center; gap: 12px; margin-top: auto; }
+.ch-review__avatar {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  object-fit: cover;
+  flex: 0 0 auto;
+}
+.ch-review__author { font-weight: 700; }
+.ch-review__product a { color: inherit; opacity: 0.7; font-size: 0.9rem; text-decoration: underline; }
+
+/* ============================================================
+ * FOOTER
+ * ============================================================ */
+.ch-footer { border-top: 1px solid rgba(128, 128, 128, 0.2); }
+.ch-footer__top {
+  display: grid;
+  grid-template-columns: 1.4fr repeat(var(--ch-cols, 3), 1fr);
+  gap: clamp(24px, 4vw, 48px);
+}
+.ch-footer__about-logo { max-width: 160px; margin-bottom: 16px; }
+.ch-footer__about-text { opacity: 0.8; max-width: 40ch; }
+.ch-footer__about-text > :first-child { margin-top: 0; }
+.ch-footer__heading { margin: 0 0 14px; font-size: 1rem; text-transform: uppercase; letter-spacing: 0.05em; }
+.ch-footer__menu { list-style: none; margin: 0; padding: 0; display: grid; gap: 10px; }
+.ch-footer__menu a { color: inherit; text-decoration: none; opacity: 0.8; }
+.ch-footer__menu a:hover { opacity: 1; text-decoration: underline; }
+.ch-footer__contact { list-style: none; margin: 0; padding: 0; display: grid; gap: 10px; opacity: 0.85; }
+.ch-footer__contact a { color: inherit; }
+.ch-footer__social { display: flex; flex-wrap: wrap; gap: 14px; margin-top: 18px; }
+.ch-footer__social a { display: inline-flex; }
+.ch-footer__social img { width: 24px; height: 24px; object-fit: contain; }
+.ch-footer__social .ch-footer__social-text {
+  font-weight: 600;
+  text-decoration: underline;
+  color: inherit;
+}
+.ch-footer__bottom {
+  margin-top: clamp(24px, 4vw, 48px);
+  padding-top: 20px;
+  border-top: 1px solid rgba(128, 128, 128, 0.2);
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 12px;
+  opacity: 0.75;
+  font-size: 0.9rem;
+}
+
+/* ============================================================
+ * RESPONSIVE
+ * ============================================================ */
+@media screen and (max-width: 990px) {
+  .ch-products .ch-grid,
+  .ch-collections:not(.ch-collections--carousel) .ch-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .ch-footer__top { grid-template-columns: 1fr 1fr; }
+}
+
+@media screen and (max-width: 749px) {
+  /* Stack hero vertically, content first */
+  .ch-hero__inner,
+  .ch-hero--img-left .ch-hero__inner {
+    flex-direction: column;
+  }
+  .ch-hero__content,
+  .ch-hero__media { width: 100%; flex-basis: auto; }
+
+  /* Single column for most grids; products keep 2-up */
+  .ch-benefits .ch-grid,
+  .ch-reviews .ch-grid,
+  .ch-collections:not(.ch-collections--carousel) .ch-grid {
+    grid-template-columns: 1fr;
+  }
+  .ch-products .ch-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 14px;
+  }
+  /* Carousel shows ~1.2 cards on mobile */
+  .ch-collections--carousel .ch-grid > * {
+    flex-basis: 80%;
+  }
+
+  .ch-footer__top { grid-template-columns: 1fr; }
+
+  /* Tap-friendly full-width buttons */
+  .ch-btn { width: 100%; }
+  .ch-btn-group { flex-direction: column; }
+  .ch-hero__content .ch-btn-group { align-items: stretch; }
+}

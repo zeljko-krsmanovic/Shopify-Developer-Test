@@ -1,0 +1,302 @@
+{% comment %}
+  ------------------------------------------------------------
+  Custom Homepage — Featured Products
+  Merchant picks products via a `product_list` setting. Each
+  card shows image, title, price (with sale handling) and a
+  button. The button can either link to the product page or add
+  the first available variant to the cart. Optional "View all".
+  ------------------------------------------------------------
+{% endcomment %}
+
+{{ 'custom-homepage.css' | asset_url | stylesheet_tag }}
+
+{%- liquid
+  assign s = section.settings
+  assign is_hidden = false
+  unless s.show_section
+    assign is_hidden = true
+  endunless
+  assign products = s.product_list
+-%}
+
+{%- if s.show_section or request.design_mode -%}
+  <section
+    class="ch-section ch-products{% if is_hidden %} ch-is-hidden{% endif %}"
+    style="
+      padding-block: {{ s.padding_top }}px {{ s.padding_bottom }}px;
+      {% if s.background_color != blank %}background: {{ s.background_color }};{% endif %}
+      {% if s.text_color != blank %}color: {{ s.text_color }};{% endif %}
+      --ch-page-width: {% if s.section_width == 'full-width' %}100%{% else %}1200px{% endif %};
+      --ch-cols: {{ s.columns }};
+      --ch-gap: {{ s.gap }}px;
+      --ch-accent: {{ s.button_color | default: '#1a1a1a' }};
+      --ch-accent-text: {{ s.button_text_color | default: '#ffffff' }};
+    "
+  >
+    <div class="ch-container">
+      {%- if s.heading != blank or s.subheading != blank -%}
+        <div class="ch-section__header">
+          {%- if s.heading != blank -%}<h2 class="ch-section__title">{{ s.heading }}</h2>{%- endif -%}
+          {%- if s.subheading != blank -%}<div class="ch-section__subtitle">{{ s.subheading }}</div>{%- endif -%}
+        </div>
+      {%- endif -%}
+
+      <div class="ch-grid">
+        {%- if products.count > 0 -%}
+          {%- for product in products -%}
+            {%- liquid
+              assign variant = product.selected_or_first_available_variant
+              assign on_sale = false
+              if product.compare_at_price > product.price
+                assign on_sale = true
+              endif
+              assign product_alt = product.featured_image.alt | default: product.title | escape
+            -%}
+            <div class="ch-card">
+              <a class="ch-card__media ch-img" href="{{ product.url }}">
+                {%- if on_sale -%}<span class="ch-card__badge">Sale</span>{%- endif -%}
+                {%- if product.featured_image -%}
+                  {{
+                    product.featured_image
+                    | image_url: width: 800
+                    | image_tag:
+                      widths: '200, 300, 400, 600, 800',
+                      sizes: '(max-width: 749px) 50vw, 25vw',
+                      alt: product_alt,
+                      loading: 'lazy'
+                  }}
+                {%- else -%}
+                  {{ 'product-1' | placeholder_svg_tag: 'ch-img' }}
+                {%- endif -%}
+              </a>
+
+              <a class="ch-card__title" href="{{ product.url }}">{{ product.title }}</a>
+
+              {%- if s.show_price -%}
+                <div class="ch-card__price">
+                  {%- if on_sale -%}
+                    <del>{{ product.compare_at_price | money }}</del>
+                    <span class="ch-card__sale">{{ product.price | money }}</span>
+                  {%- else -%}
+                    {{ product.price | money }}
+                  {%- endif -%}
+                </div>
+              {%- endif -%}
+
+              <div class="ch-card__footer">
+                {%- if s.button_action == 'add_to_cart' -%}
+                  <form action="{{ routes.cart_add_url }}" method="post" enctype="multipart/form-data">
+                    <input type="hidden" name="id" value="{{ variant.id }}">
+                    <button
+                      type="submit"
+                      class="ch-btn ch-btn--primary"
+                      {% unless product.available %}disabled{% endunless %}
+                    >
+                      {% if product.available %}{{ s.button_label | default: 'Add to cart' }}{% else %}Sold out{% endif %}
+                    </button>
+                  </form>
+                {%- else -%}
+                  <a class="ch-btn ch-btn--primary" href="{{ product.url }}">
+                    {{ s.button_label | default: 'View product' }}
+                  </a>
+                {%- endif -%}
+              </div>
+            </div>
+          {%- endfor -%}
+        {%- elsif request.design_mode -%}
+          {%- comment -%} Editor-only placeholders so the section isn't empty before products are picked. {%- endcomment -%}
+          {%- assign placeholder_count = s.columns -%}
+          {%- for i in (1..placeholder_count) -%}
+            <div class="ch-card">
+              <div class="ch-card__media ch-img">{{ 'product-' | append: i | placeholder_svg_tag: 'ch-img' }}</div>
+              <span class="ch-card__title">Example product</span>
+              {%- if s.show_price -%}<div class="ch-card__price">$29.00</div>{%- endif -%}
+              <div class="ch-card__footer">
+                <span class="ch-btn ch-btn--primary">{{ s.button_label | default: 'View product' }}</span>
+              </div>
+            </div>
+          {%- endfor -%}
+        {%- endif -%}
+      </div>
+
+      {%- if s.view_all_label != blank and s.view_all_link != blank -%}
+        <div class="ch-products__viewall">
+          <a class="ch-btn ch-btn--secondary" href="{{ s.view_all_link }}">{{ s.view_all_label }}</a>
+        </div>
+      {%- endif -%}
+    </div>
+  </section>
+{%- endif -%}
+
+{% schema %}
+{
+  "name": "Custom Featured Products",
+  "tag": "section",
+  "class": "ch-products-wrapper",
+  "settings": [
+    {
+      "type": "checkbox",
+      "id": "show_section",
+      "label": "Show section",
+      "default": true
+    },
+    {
+      "type": "header",
+      "content": "Heading"
+    },
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Heading",
+      "default": "Featured products"
+    },
+    {
+      "type": "richtext",
+      "id": "subheading",
+      "label": "Subheading"
+    },
+    {
+      "type": "header",
+      "content": "Products"
+    },
+    {
+      "type": "product_list",
+      "id": "product_list",
+      "label": "Products",
+      "limit": 12,
+      "info": "Pick the products to feature. Drag to reorder."
+    },
+    {
+      "type": "checkbox",
+      "id": "show_price",
+      "label": "Show price",
+      "default": true
+    },
+    {
+      "type": "header",
+      "content": "Button"
+    },
+    {
+      "type": "select",
+      "id": "button_action",
+      "label": "Button action",
+      "options": [
+        { "value": "view", "label": "Link to product page" },
+        { "value": "add_to_cart", "label": "Add to cart" }
+      ],
+      "default": "view",
+      "info": "Add to cart adds the first available variant."
+    },
+    {
+      "type": "text",
+      "id": "button_label",
+      "label": "Button label",
+      "default": "View product"
+    },
+    {
+      "type": "header",
+      "content": "View all"
+    },
+    {
+      "type": "text",
+      "id": "view_all_label",
+      "label": "\"View all\" label",
+      "default": "View all products"
+    },
+    {
+      "type": "url",
+      "id": "view_all_link",
+      "label": "\"View all\" link"
+    },
+    {
+      "type": "header",
+      "content": "Layout"
+    },
+    {
+      "type": "range",
+      "id": "columns",
+      "label": "Products per row (desktop)",
+      "min": 2,
+      "max": 5,
+      "step": 1,
+      "default": 4
+    },
+    {
+      "type": "range",
+      "id": "gap",
+      "label": "Gap between cards",
+      "min": 8,
+      "max": 48,
+      "step": 4,
+      "unit": "px",
+      "default": 24
+    },
+    {
+      "type": "select",
+      "id": "section_width",
+      "label": "Section width",
+      "options": [
+        { "value": "page-width", "label": "Page width" },
+        { "value": "full-width", "label": "Full width" }
+      ],
+      "default": "page-width"
+    },
+    {
+      "type": "header",
+      "content": "Colors"
+    },
+    {
+      "type": "color_background",
+      "id": "background_color",
+      "label": "Background color"
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": "Text color"
+    },
+    {
+      "type": "color",
+      "id": "button_color",
+      "label": "Button color",
+      "default": "#1a1a1a"
+    },
+    {
+      "type": "color",
+      "id": "button_text_color",
+      "label": "Button text color",
+      "default": "#ffffff"
+    },
+    {
+      "type": "header",
+      "content": "Padding"
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "label": "Top padding",
+      "min": 0,
+      "max": 160,
+      "step": 4,
+      "unit": "px",
+      "default": 64
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "label": "Bottom padding",
+      "min": 0,
+      "max": 160,
+      "step": 4,
+      "unit": "px",
+      "default": 64
+    }
+  ],
+  "presets": [
+    {
+      "name": "Custom Featured Products",
+      "category": "Custom homepage"
+    }
+  ]
+}
+{% endschema %}

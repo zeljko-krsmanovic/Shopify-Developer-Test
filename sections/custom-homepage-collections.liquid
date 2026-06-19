@@ -1,0 +1,257 @@
+{% comment %}
+  ------------------------------------------------------------
+  Custom Homepage — Collections
+  Merchant picks collections via a `collection_list` setting.
+  Each card shows the collection image (falls back to the first
+  product image), title, a short description excerpt, and a
+  "Shop" button. Layout can be a responsive grid or a CSS-only
+  swipe carousel (no JavaScript required).
+  ------------------------------------------------------------
+{% endcomment %}
+
+{{ 'custom-homepage.css' | asset_url | stylesheet_tag }}
+
+{%- liquid
+  assign s = section.settings
+  assign is_hidden = false
+  unless s.show_section
+    assign is_hidden = true
+  endunless
+  assign collections = s.collection_list
+-%}
+
+{%- if s.show_section or request.design_mode -%}
+  <section
+    class="ch-section ch-collections ch-collections--{{ s.layout }}{% if is_hidden %} ch-is-hidden{% endif %}"
+    style="
+      padding-block: {{ s.padding_top }}px {{ s.padding_bottom }}px;
+      {% if s.background_color != blank %}background: {{ s.background_color }};{% endif %}
+      {% if s.text_color != blank %}color: {{ s.text_color }};{% endif %}
+      --ch-page-width: {% if s.section_width == 'full-width' %}100%{% else %}1200px{% endif %};
+      --ch-cols: {{ s.columns }};
+      --ch-gap: {{ s.gap }}px;
+      --ch-accent: {{ s.button_color | default: '#1a1a1a' }};
+      --ch-accent-text: {{ s.button_text_color | default: '#ffffff' }};
+    "
+  >
+    <div class="ch-container">
+      {%- if s.heading != blank or s.subheading != blank -%}
+        <div class="ch-section__header">
+          {%- if s.heading != blank -%}<h2 class="ch-section__title">{{ s.heading }}</h2>{%- endif -%}
+          {%- if s.subheading != blank -%}<div class="ch-section__subtitle">{{ s.subheading }}</div>{%- endif -%}
+        </div>
+      {%- endif -%}
+
+      <div class="ch-grid">
+        {%- if collections.count > 0 -%}
+          {%- for collection in collections -%}
+            {%- liquid
+              assign coll_image = collection.image
+              if coll_image == blank
+                assign coll_image = collection.products.first.featured_image
+              endif
+              assign coll_alt = collection.title | escape
+            -%}
+            <div class="ch-card">
+              <a class="ch-card__media ch-img" href="{{ collection.url }}">
+                {%- if coll_image != blank -%}
+                  {{
+                    coll_image
+                    | image_url: width: 800
+                    | image_tag:
+                      widths: '300, 500, 700, 800',
+                      sizes: '(max-width: 749px) 100vw, 33vw',
+                      alt: coll_alt,
+                      loading: 'lazy'
+                  }}
+                {%- else -%}
+                  {{ 'collection-1' | placeholder_svg_tag: 'ch-img' }}
+                {%- endif -%}
+              </a>
+
+              <a class="ch-card__title" href="{{ collection.url }}">{{ collection.title }}</a>
+
+              {%- if s.show_description and collection.description != blank -%}
+                <p class="ch-card__desc">
+                  {{ collection.description | strip_html | truncatewords: 18 }}
+                </p>
+              {%- endif -%}
+
+              <div class="ch-card__footer">
+                <a class="ch-btn ch-btn--primary" href="{{ collection.url }}">
+                  {{ s.button_label | default: 'Shop' }}
+                </a>
+              </div>
+            </div>
+          {%- endfor -%}
+        {%- elsif request.design_mode -%}
+          {%- comment -%} Editor-only placeholders so the section isn't empty before collections are picked. {%- endcomment -%}
+          {%- assign placeholder_count = s.columns -%}
+          {%- for i in (1..placeholder_count) -%}
+            <div class="ch-card">
+              <div class="ch-card__media ch-img">{{ 'collection-' | append: i | placeholder_svg_tag: 'ch-img' }}</div>
+              <span class="ch-card__title">Example collection</span>
+              {%- if s.show_description -%}<p class="ch-card__desc">A short description of this collection.</p>{%- endif -%}
+              <div class="ch-card__footer">
+                <span class="ch-btn ch-btn--primary">{{ s.button_label | default: 'Shop' }}</span>
+              </div>
+            </div>
+          {%- endfor -%}
+        {%- endif -%}
+      </div>
+    </div>
+  </section>
+{%- endif -%}
+
+{% schema %}
+{
+  "name": "Custom Collections",
+  "tag": "section",
+  "class": "ch-collections-wrapper",
+  "settings": [
+    {
+      "type": "checkbox",
+      "id": "show_section",
+      "label": "Show section",
+      "default": true
+    },
+    {
+      "type": "header",
+      "content": "Heading"
+    },
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Heading",
+      "default": "Shop by collection"
+    },
+    {
+      "type": "richtext",
+      "id": "subheading",
+      "label": "Subheading"
+    },
+    {
+      "type": "header",
+      "content": "Collections"
+    },
+    {
+      "type": "collection_list",
+      "id": "collection_list",
+      "label": "Collections",
+      "limit": 6,
+      "info": "Pick the collections to display. Drag to reorder."
+    },
+    {
+      "type": "checkbox",
+      "id": "show_description",
+      "label": "Show collection description",
+      "default": true
+    },
+    {
+      "type": "text",
+      "id": "button_label",
+      "label": "Button label",
+      "default": "Shop"
+    },
+    {
+      "type": "header",
+      "content": "Layout"
+    },
+    {
+      "type": "select",
+      "id": "layout",
+      "label": "Layout",
+      "options": [
+        { "value": "grid", "label": "Grid" },
+        { "value": "carousel", "label": "Carousel (swipe)" }
+      ],
+      "default": "grid"
+    },
+    {
+      "type": "range",
+      "id": "columns",
+      "label": "Cards per row (desktop)",
+      "min": 2,
+      "max": 4,
+      "step": 1,
+      "default": 3
+    },
+    {
+      "type": "range",
+      "id": "gap",
+      "label": "Gap between cards",
+      "min": 8,
+      "max": 48,
+      "step": 4,
+      "unit": "px",
+      "default": 24
+    },
+    {
+      "type": "select",
+      "id": "section_width",
+      "label": "Section width",
+      "options": [
+        { "value": "page-width", "label": "Page width" },
+        { "value": "full-width", "label": "Full width" }
+      ],
+      "default": "page-width"
+    },
+    {
+      "type": "header",
+      "content": "Colors"
+    },
+    {
+      "type": "color_background",
+      "id": "background_color",
+      "label": "Background color"
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": "Text color"
+    },
+    {
+      "type": "color",
+      "id": "button_color",
+      "label": "Button color",
+      "default": "#1a1a1a"
+    },
+    {
+      "type": "color",
+      "id": "button_text_color",
+      "label": "Button text color",
+      "default": "#ffffff"
+    },
+    {
+      "type": "header",
+      "content": "Padding"
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "label": "Top padding",
+      "min": 0,
+      "max": 160,
+      "step": 4,
+      "unit": "px",
+      "default": 64
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "label": "Bottom padding",
+      "min": 0,
+      "max": 160,
+      "step": 4,
+      "unit": "px",
+      "default": 64
+    }
+  ],
+  "presets": [
+    {
+      "name": "Custom Collections",
+      "category": "Custom homepage"
+    }
+  ]
+}
+{% endschema %}

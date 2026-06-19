@@ -1,0 +1,188 @@
+/*
+ * ------------------------------------------------------------
+ * IMPORTANT: The contents of this file are auto-generated.
+ *
+ * This file may be updated by the Shopify admin theme editor
+ * or related systems. Please exercise caution as any changes
+ * made to this file may be overwritten.
+ * ------------------------------------------------------------
+ */
+{
+  "sections": {
+    "hero": {
+      "type": "custom-homepage-hero",
+      "settings": {
+        "show_section": true,
+        "heading": "Welcome to our store",
+        "subheading": "<p>Discover thoughtfully made products, crafted to last and designed for everyday life.</p>",
+        "button_label": "Shop now",
+        "button_link": "shopify://collections/all",
+        "secondary_button_label": "Learn more",
+        "secondary_button_link": "",
+        "image_alt": "",
+        "image_position": "right",
+        "content_alignment": "left",
+        "section_width": "page-width",
+        "background_color": "",
+        "text_color": "",
+        "button_color": "#1a1a1a",
+        "button_text_color": "#ffffff",
+        "padding_top": 72,
+        "padding_bottom": 72
+      }
+    },
+    "benefits": {
+      "type": "custom-homepage-benefits",
+      "blocks": {
+        "b1": {
+          "type": "benefit",
+          "settings": {
+            "title": "Free shipping",
+            "text": "On all orders over $50, delivered to your door.",
+            "link": "",
+            "link_label": "Learn more"
+          }
+        },
+        "b2": {
+          "type": "benefit",
+          "settings": {
+            "title": "Easy returns",
+            "text": "30-day hassle-free returns, no questions asked.",
+            "link": "",
+            "link_label": "Learn more"
+          }
+        },
+        "b3": {
+          "type": "benefit",
+          "settings": {
+            "title": "Secure checkout",
+            "text": "Your payment details are always protected.",
+            "link": "",
+            "link_label": "Learn more"
+          }
+        }
+      },
+      "block_order": [
+        "b1",
+        "b2",
+        "b3"
+      ],
+      "settings": {
+        "show_section": true,
+        "heading": "Why shop with us",
+        "subheading": "",
+        "columns": 3,
+        "gap": 24,
+        "alignment": "center",
+        "section_width": "page-width",
+        "background_color": "",
+        "text_color": "",
+        "padding_top": 56,
+        "padding_bottom": 56
+      }
+    },
+    "featured_products": {
+      "type": "custom-homepage-featured-products",
+      "settings": {
+        "show_section": true,
+        "heading": "Featured products",
+        "subheading": "",
+        "product_list": [],
+        "show_price": true,
+        "button_action": "view",
+        "button_label": "View product",
+        "view_all_label": "View all products",
+        "view_all_link": "shopify://collections/all",
+        "columns": 4,
+        "gap": 24,
+        "section_width": "page-width",
+        "background_color": "",
+        "text_color": "",
+        "button_color": "#1a1a1a",
+        "button_text_color": "#ffffff",
+        "padding_top": 64,
+        "padding_bottom": 64
+      }
+    },
+    "collections": {
+      "type": "custom-homepage-collections",
+      "settings": {
+        "show_section": true,
+        "heading": "Shop by collection",
+        "subheading": "",
+        "collection_list": [],
+        "show_description": true,
+        "button_label": "Shop",
+        "layout": "grid",
+        "columns": 3,
+        "gap": 24,
+        "section_width": "page-width",
+        "background_color": "",
+        "text_color": "",
+        "button_color": "#1a1a1a",
+        "button_text_color": "#ffffff",
+        "padding_top": 64,
+        "padding_bottom": 64
+      }
+    },
+    "reviews": {
+      "type": "custom-homepage-reviews",
+      "blocks": {
+        "r1": {
+          "type": "review",
+          "settings": {
+            "author": "Jane D.",
+            "review": "<p>Absolutely love it — exactly as described and the quality is fantastic. Will be ordering again!</p>",
+            "rating": 5,
+            "role": "Verified buyer",
+            "product": ""
+          }
+        },
+        "r2": {
+          "type": "review",
+          "settings": {
+            "author": "Marcus T.",
+            "review": "<p>Great value and fast shipping. The fit is perfect and it feels premium.</p>",
+            "rating": 5,
+            "role": "Verified buyer",
+            "product": ""
+          }
+        },
+        "r3": {
+          "type": "review",
+          "settings": {
+            "author": "Priya S.",
+            "review": "<p>Customer service was super helpful and the product exceeded my expectations.</p>",
+            "rating": 4,
+            "role": "Verified buyer",
+            "product": ""
+          }
+        }
+      },
+      "block_order": [
+        "r1",
+        "r2",
+        "r3"
+      ],
+      "settings": {
+        "show_section": true,
+        "heading": "What our customers say",
+        "subheading": "",
+        "columns": 3,
+        "gap": 24,
+        "section_width": "page-width",
+        "background_color": "",
+        "text_color": "",
+        "padding_top": 64,
+        "padding_bottom": 64
+      }
+    }
+  },
+  "order": [
+    "hero",
+    "benefits",
+    "featured_products",
+    "collections",
+    "reviews"
+  ]
+}
