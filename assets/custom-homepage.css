@@ -210,7 +210,8 @@ img.ch-img,
 .ch-card__footer { margin-top: auto; }
 .ch-card .ch-btn { width: 100%; }
 
-.ch-products__viewall { text-align: center; margin-top: clamp(24px, 4vw, 40px); }
+.ch-products__viewall,
+.ch-collections__cta { text-align: center; margin-top: clamp(24px, 4vw, 40px); }
 
 /* Collections carousel layout (no JS — CSS scroll-snap) */
 .ch-collections--carousel .ch-grid {

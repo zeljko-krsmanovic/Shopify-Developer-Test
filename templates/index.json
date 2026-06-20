@@ -106,17 +106,24 @@
     },
     "collections": {
       "type": "custom-homepage-collections",
+      "blocks": {
+        "c1": { "type": "collection_card", "settings": {} },
+        "c2": { "type": "collection_card", "settings": {} },
+        "c3": { "type": "collection_card", "settings": {} }
+      },
+      "block_order": ["c1", "c2", "c3"],
       "settings": {
         "show_section": true,
         "heading": "Shop by collection",
         "subheading": "",
-        "collection_list": [],
         "show_description": true,
         "button_label": "Shop",
         "layout": "grid",
         "columns": 3,
         "gap": 24,
         "section_width": "page-width",
+        "cta_label": "",
+        "cta_link": "",
         "background_color": "",
         "text_color": "",
         "button_color": "#1a1a1a",

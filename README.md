@@ -4,7 +4,6 @@ Preview link: https://zeljko-testprocessing.myshopify.com/?_ab=0&_bt=eyJfcmFpbHM
 <br>
 Password: rtibre
 
-
 A custom, **fully merchant-editable** homepage built for Shopify (Horizon theme). The homepage
 is composed of six purpose-built sections — **Hero, Benefits, Featured Products, Collections,
 Reviews, and Footer** — each configurable end-to-end from the **Shopify Theme Editor** with no
@@ -22,7 +21,7 @@ code changes required.
 | 1 | **Hero** | Heading, description, primary + secondary buttons, hero image, image left/right, background image or colour, text colour | ✔ |
 | 2 | **Benefits** | 2–4 reorderable benefit items, each with icon, title, text, optional link | ✔ |
 | 3 | **Featured Products** | Merchant-picked products, image · title · price (sale-aware), product link **or** add-to-cart, “View all” button | ✔ |
-| 4 | **Collections** | Merchant-picked collections, image · title · description · “Shop” button, grid **or** swipe carousel | ✔ |
+| 4 | **Collections** | Per-card blocks: pick a collection **or** build a manual card (image · title · description · custom link), grid **or** swipe carousel, optional CTA | ✔ |
 | 5 | **Reviews** | Add/edit/reorder testimonials: name, text, 1–5 star rating, photo, optional linked product | ✔ |
 | 6 | **Footer** | About + logo, link menus, contact details, social links, auto copyright | ✔ |
 
@@ -61,7 +60,7 @@ Open **Customize → Home page**, then click any section in the left panel.
 | **Hero** | Heading, description, button labels + links, hero image (and alt text), image position (left/right), background colour/image, text colour, padding |
 | **Benefits** | Click a benefit to edit its icon, title, text, and link. Drag to reorder, **＋** to add (max 4), 🗑 to remove. Set columns and alignment |
 | **Featured Products** | Open the **Products** picker to choose/reorder products. Set products-per-row, button behaviour (link vs add-to-cart), and the “View all” link |
-| **Collections** | Open the **Collections** picker to choose/reorder collections. Toggle Grid vs Carousel and cards-per-row |
+| **Collections** | Add a **Collection card** block per card. Pick a Shopify collection to auto-fill image/title/description/link, **or** fill the fields manually and set a custom **button link**. Drag to reorder. Toggle Grid vs Carousel, cards-per-row, and an optional section CTA |
 | **Reviews** | Add/edit/reorder review blocks: reviewer name, text, star rating, photo, optional linked product |
 | **Footer** | Edit about text/logo, link-group menus, contact info, social links, and copyright *(see Footer note in section 6)* |
 | **Any section** | **Show section** toggle, page/full width, background & text colour, top/bottom padding |
@@ -91,7 +90,7 @@ sections/
   custom-homepage-hero.liquid               # Hero
   custom-homepage-benefits.liquid           # Benefits (blocks)
   custom-homepage-featured-products.liquid  # Featured Products (product_list)
-  custom-homepage-collections.liquid        # Collections (collection_list)
+  custom-homepage-collections.liquid        # Collections (collection_card blocks)
   custom-homepage-reviews.liquid            # Reviews (blocks)
   custom-homepage-footer.liquid             # Footer (blocks)
 templates/

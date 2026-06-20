@@ -1,11 +1,17 @@
 {% comment %}
   ------------------------------------------------------------
   Custom Homepage — Collections
-  Merchant picks collections via a `collection_list` setting.
-  Each card shows the collection image (falls back to the first
-  product image), title, a short description excerpt, and a
-  "Shop" button. Layout can be a responsive grid or a CSS-only
-  swipe carousel (no JavaScript required).
+  A collection showcase built from reorderable "Collection card"
+  blocks. Each card can either:
+    1. Reference a real Shopify collection (image, title,
+       description and link auto-fill from it), OR
+    2. Be a fully manual card — set your own image, title,
+       description and a custom button link.
+  Any per-card field left blank falls back to the picked
+  collection's value, so a card can mix both modes. This is what
+  lets every card point to the correct, merchant-chosen link.
+  Layout can be a responsive grid or a CSS-only swipe carousel
+  (no JavaScript required), with an optional section CTA.
   ------------------------------------------------------------
 {% endcomment %}
 
@@ -17,7 +23,6 @@
   unless s.show_section
     assign is_hidden = true
   endunless
-  assign collections = s.collection_list
 -%}
 
 {%- if s.show_section or request.design_mode -%}
@@ -43,49 +48,84 @@
       {%- endif -%}
 
       <div class="ch-grid">
-        {%- if collections.count > 0 -%}
-          {%- for collection in collections -%}
+        {%- if section.blocks.size > 0 -%}
+          {%- for block in section.blocks -%}
             {%- liquid
-              assign coll_image = collection.image
-              if coll_image == blank
-                assign coll_image = collection.products.first.featured_image
+              assign b = block.settings
+              assign coll = b.collection
+
+              # Resolve each field: per-card override first, then the
+              # picked collection, then a sensible fallback.
+              assign card_title = b.title
+              if card_title == blank
+                assign card_title = coll.title
               endif
-              assign coll_alt = collection.title | escape
+
+              assign card_link = b.link
+              if card_link == blank
+                assign card_link = coll.url
+              endif
+
+              assign card_image = b.image
+              if card_image == blank
+                assign card_image = coll.image
+              endif
+              if card_image == blank and coll != blank
+                assign card_image = coll.products.first.featured_image
+              endif
+
+              assign card_desc = b.description
+              if card_desc == blank
+                assign card_desc = coll.description
+              endif
+
+              assign card_label = b.button_label | default: s.button_label | default: 'Shop'
+              assign card_alt = card_title | escape
             -%}
-            <div class="ch-card">
-              <a class="ch-card__media ch-img" href="{{ collection.url }}">
-                {%- if coll_image != blank -%}
+            <div class="ch-card" {{ block.shopify_attributes }}>
+              {%- if card_link != blank -%}
+                <a class="ch-card__media ch-img" href="{{ card_link }}">
+              {%- else -%}
+                <div class="ch-card__media ch-img">
+              {%- endif -%}
+                {%- if card_image != blank -%}
                   {{
-                    coll_image
+                    card_image
                     | image_url: width: 800
                     | image_tag:
                       widths: '300, 500, 700, 800',
                       sizes: '(max-width: 749px) 100vw, 33vw',
-                      alt: coll_alt,
+                      alt: card_alt,
                       loading: 'lazy'
                   }}
                 {%- else -%}
                   {{ 'collection-1' | placeholder_svg_tag: 'ch-img' }}
                 {%- endif -%}
-              </a>
+              {%- if card_link != blank -%}</a>{%- else -%}</div>{%- endif -%}
 
-              <a class="ch-card__title" href="{{ collection.url }}">{{ collection.title }}</a>
+              {%- if card_title != blank -%}
+                {%- if card_link != blank -%}
+                  <a class="ch-card__title" href="{{ card_link }}">{{ card_title }}</a>
+                {%- else -%}
+                  <span class="ch-card__title">{{ card_title }}</span>
+                {%- endif -%}
+              {%- endif -%}
 
-              {%- if s.show_description and collection.description != blank -%}
+              {%- if s.show_description and card_desc != blank -%}
                 <p class="ch-card__desc">
-                  {{ collection.description | strip_html | truncatewords: 18 }}
+                  {{ card_desc | strip_html | truncatewords: 18 }}
                 </p>
               {%- endif -%}
 
-              <div class="ch-card__footer">
-                <a class="ch-btn ch-btn--primary" href="{{ collection.url }}">
-                  {{ s.button_label | default: 'Shop' }}
-                </a>
-              </div>
+              {%- if card_link != blank -%}
+                <div class="ch-card__footer">
+                  <a class="ch-btn ch-btn--primary" href="{{ card_link }}">{{ card_label }}</a>
+                </div>
+              {%- endif -%}
             </div>
           {%- endfor -%}
         {%- elsif request.design_mode -%}
-          {%- comment -%} Editor-only placeholders so the section isn't empty before collections are picked. {%- endcomment -%}
+          {%- comment -%} Editor-only placeholders so the section isn't empty before any cards are added. {%- endcomment -%}
           {%- assign placeholder_count = s.columns -%}
           {%- for i in (1..placeholder_count) -%}
             <div class="ch-card">
@@ -99,6 +139,12 @@
           {%- endfor -%}
         {%- endif -%}
       </div>
+
+      {%- if s.cta_label != blank and s.cta_link != blank -%}
+        <div class="ch-collections__cta">
+          <a class="ch-btn ch-btn--secondary" href="{{ s.cta_link }}">{{ s.cta_label }}</a>
+        </div>
+      {%- endif -%}
     </div>
   </section>
 {%- endif -%}
@@ -108,6 +154,7 @@
   "name": "Custom Collections",
   "tag": "section",
   "class": "ch-collections-wrapper",
+  "max_blocks": 12,
   "settings": [
     {
       "type": "checkbox",
@@ -132,26 +179,24 @@
     },
     {
       "type": "header",
-      "content": "Collections"
+      "content": "Cards"
     },
     {
-      "type": "collection_list",
-      "id": "collection_list",
-      "label": "Collections",
-      "limit": 6,
-      "info": "Pick the collections to display. Drag to reorder."
+      "type": "paragraph",
+      "content": "Add a \"Collection card\" block for each card. Pick a Shopify collection to auto-fill it, or fill the fields manually and set a custom button link."
     },
     {
       "type": "checkbox",
       "id": "show_description",
-      "label": "Show collection description",
+      "label": "Show description",
       "default": true
     },
     {
       "type": "text",
       "id": "button_label",
-      "label": "Button label",
-      "default": "Shop"
+      "label": "Default button label",
+      "default": "Shop",
+      "info": "Used when a card doesn't set its own button label."
     },
     {
       "type": "header",
@@ -195,6 +240,21 @@
         { "value": "full-width", "label": "Full width" }
       ],
       "default": "page-width"
+    },
+    {
+      "type": "header",
+      "content": "Call to action"
+    },
+    {
+      "type": "text",
+      "id": "cta_label",
+      "label": "CTA button label",
+      "info": "Optional button shown below the cards (e.g. \"View all collections\")."
+    },
+    {
+      "type": "url",
+      "id": "cta_link",
+      "label": "CTA button link"
     },
     {
       "type": "header",
@@ -247,10 +307,64 @@
       "default": 64
     }
   ],
+  "blocks": [
+    {
+      "type": "collection_card",
+      "name": "Collection card",
+      "settings": [
+        {
+          "type": "collection",
+          "id": "collection",
+          "label": "Collection",
+          "info": "Pick a collection to auto-fill the image, title, description and link. Leave empty to build a fully manual card."
+        },
+        {
+          "type": "header",
+          "content": "Overrides (optional)"
+        },
+        {
+          "type": "paragraph",
+          "content": "Anything you set here overrides the collection above. Leave blank to use the collection's own value."
+        },
+        {
+          "type": "image_picker",
+          "id": "image",
+          "label": "Image"
+        },
+        {
+          "type": "text",
+          "id": "title",
+          "label": "Title"
+        },
+        {
+          "type": "richtext",
+          "id": "description",
+          "label": "Description"
+        },
+        {
+          "type": "url",
+          "id": "link",
+          "label": "Button / card link",
+          "info": "Set a custom link for this card. Defaults to the picked collection's page."
+        },
+        {
+          "type": "text",
+          "id": "button_label",
+          "label": "Button label",
+          "info": "Defaults to the section's default button label."
+        }
+      ]
+    }
+  ],
   "presets": [
     {
       "name": "Custom Collections",
-      "category": "Custom homepage"
+      "category": "Custom homepage",
+      "blocks": [
+        { "type": "collection_card" },
+        { "type": "collection_card" },
+        { "type": "collection_card" }
+      ]
     }
   ]
 }
